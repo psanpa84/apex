@@ -1,0 +1,60 @@
+# Zona Entreno
+
+Webapp inicial para controlar entrenamiento con fuentes Polar, Strava y Google Sheets.
+
+## Cómo abrirla
+
+Abre `index.html` en tu navegador.
+
+## Cómo probar tu hoja de entrenamiento
+
+Desde Google Sheets:
+
+1. Ve a `Archivo > Descargar > Valores separados por comas (.csv)`.
+2. En la app, pulsa `Importar CSV`.
+
+La app reconoce columnas con estos nombres:
+
+- `fecha` o `date`
+- `plan`, `entreno` o `workout`
+- `real`, `realizado` o `done`
+- `rpe` o `esfuerzo`
+- `carga` o `load`
+- `estado` o `status`
+
+También puedes importar bloques con `plantilla-bloques.csv`:
+
+- `bloque`: umbral z4, z2/tirada larga, series o fuerza
+- `marca`
+- `km`
+- `ritmo`
+- `zona`
+- `progreso`
+- Para fuerza/Jefit: `ejercicio`, `peso`, `reps`, `anterior`, `actual`, `cambio`
+
+Y pruebas cada 4-6 semanas con `plantilla-pruebas.csv`:
+
+- `semana` o `fecha`
+- `prueba`
+- `resultado`
+- `cambio`
+
+## Siguiente paso para datos reales
+
+Para conectar cuentas reales hay que añadir un backend con OAuth:
+
+- Polar AccessLink: sueño, Nightly Recharge, pulso, actividad diaria y entrenamientos.
+- Strava API: actividades, ritmo, desnivel, frecuencia cardiaca, potencia y segmentos.
+- Google Sheets API: lectura del plan de entrenamiento.
+
+La app ya tiene la interfaz y la separación de fuentes preparada para esa conexión.
+
+## Publicarla en GitHub Pages
+
+1. Crea un repositorio en GitHub.
+2. Sube todo el contenido de esta carpeta.
+3. En GitHub, ve a `Settings > Pages`.
+4. En `Build and deployment`, elige `Deploy from a branch`.
+5. Selecciona la rama principal y la carpeta raíz.
+
+Para que sea privada con permisos por usuario hace falta usar GitHub privado o añadir autenticación externa. GitHub Pages público no protege por login si el repositorio es público.

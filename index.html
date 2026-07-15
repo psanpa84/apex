@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Centro de Entrenamiento</title>
+  <style>
+    :root {
+      --bg: #f5f7f3;
+      --panel: #ffffff;
+      --ink: #18211f;
+      --muted: #65706b;
+      --line: #dce3dd;
+      --green: #0f8f6d;
+      --teal: #0b6f82;
+      --red: #c94b4b;
+      --amber: #c27a19;
+      --blue: #345fd8;
+      --shadow: 0 14px 40px rgba(24, 33, 31, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+    }
+
+    aside {
+      background: #13221d;
+      color: #f4faf7;
+      padding: 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 44px;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: conic-gradient(from 210deg, #47d7a6, #2e75ff, #f0a330, #47d7a6);
+      display: grid;
+      place-items: center;
+      color: #13221d;
+      font-weight: 900;
+    }
+
+    .brand strong { display: block; font-size: 15px; }
+    .brand span { color: #b4c5bd; font-size: 12px; }
+
+    nav { display: grid; gap: 7px; }
+    .nav-button {
+      width: 100%;
+      border: 0;
+      border-radius: 8px;
+      color: #dce9e4;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 12px;
+      text-align: left;
+    }
+
+    .nav-button svg { width: 18px; height: 18px; }
+    .nav-button.active, .nav-button:hover { background: rgba(255,255,255,.11); color: #fff; }
+
+    .sync-box {
+      margin-top: auto;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px;
+      padding: 14px;
+      background: rgba(255,255,255,.06);
+    }
+
+    .sync-box p { margin: 8px 0 0; color: #bed0c8; font-size: 13px; line-height: 1.4; }
+    .sync-time { font-size: 12px; color: #92aca0; }
+
+    main { min-width: 0; }
+
+    header {
+      min-height: 86px;
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(245, 247, 243, .86);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing: 0;
+      line-height: 1.05;
+    }
+
+    .subhead { margin: 6px 0 0; color: var(--muted); }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 13px;
+      background: var(--panel);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+    }
+
+    .btn.primary { background: #13221d; border-color: #13221d; color: #fff; }
+    .btn.good { background: #e7f6ef; border-color: #bce8d6; color: #087457; }
+    .btn svg { width: 17px; height: 17px; }
+
+    .content { padding: 24px 28px 34px; display: grid; gap: 18px; }
+    .view { display: none; }
+    .view.active { display: grid; gap: 18px; }
+
+    .grid { display: grid; gap: 16px; }
+    .grid.metrics { grid-template-columns: repeat(4, minmax(150px, 1fr)); }
+    .grid.two { grid-template-columns: minmax(0, 1.35fr) minmax(320px, .65fr); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .card.pad { padding: 18px; }
+    .card-head {
+      padding: 16px 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h2, h3 { margin: 0; letter-spacing: 0; }
+    h2 { font-size: 18px; }
+    h3 { font-size: 15px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+
+    .metric {
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+      min-height: 142px;
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #eef3ef;
+    }
+
+    .metric-icon svg { width: 19px; height: 19px; }
+    .value { font-size: 32px; font-weight: 800; letter-spacing: 0; line-height: 1; }
+    .trend { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
+    .trend.good { color: var(--green); }
+    .trend.warn { color: var(--amber); }
+    .trend.bad { color: var(--red); }
+
+    .chart-wrap { padding: 12px 18px 18px; }
+    canvas { width: 100%; max-width: 100%; display: block; }
+    #loadChart { height: 300px; }
+    #sleepChart, #hrChart { height: 210px; }
+
+    .status-pill, .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 12px;
+      white-space: nowrap;
+      border: 1px solid var(--line);
+      background: #f8faf8;
+    }
+
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+    .dot.warn { background: var(--amber); }
+    .dot.bad { background: var(--red); }
+
+    .workouts { display: grid; gap: 10px; padding: 16px 18px 18px; }
+    .workout {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .workout-main { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+    .workout-title { font-weight: 750; }
+    .workout-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .progress {
+      height: 8px;
+      border-radius: 999px;
+      background: #edf2ef;
+      overflow: hidden;
+    }
+
+    .progress span { display: block; height: 100%; border-radius: inherit; background: var(--green); }
+
+    .table-wrap { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 780px; }
+    th, td { padding: 13px 14px; border-bottom: 1px solid var(--line); text-align: left; }
+    th { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+    td { font-size: 14px; }
+
+    .connection-list { display: grid; gap: 12px; }
+    .connection {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
+      gap: 13px;
+      align-items: center;
+      background: var(--panel);
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .logo.polar { background: #d91e35; }
+    .logo.strava { background: #fc4c02; }
+    .logo.sheets { background: #1f9d55; }
+
+    .form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label { display: grid; gap: 7px; font-size: 13px; color: var(--muted); }
+    input, select, textarea {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 42px;
+      padding: 10px 11px;
+      color: var(--ink);
+      background: #fff;
+      width: 100%;
+    }
+
+    textarea { min-height: 120px; resize: vertical; grid-column: 1 / -1; }
+    .full { grid-column: 1 / -1; }
+
+    .insights { display: grid; gap: 10px; }
+    .insight {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 10px;
+      align-items: flex-start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .insight svg { width: 20px; height: 20px; margin: 7px; color: var(--teal); }
+    .insight p { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.42; }
+
+    .recommendation {
+      display: grid;
+      gap: 12px;
+      border-left: 4px solid var(--green);
+    }
+
+    .recommendation.warn { border-left-color: var(--amber); }
+    .recommendation.bad { border-left-color: var(--red); }
+    .recommendation strong { font-size: 20px; }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .score {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px;
+      background: #fbfcfb;
+    }
+
+    .score span { display: block; color: var(--muted); font-size: 12px; }
+    .score b { display: block; margin-top: 4px; font-size: 20px; }
+
+    .block-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .block-card {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .block-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .block-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .block-kpi {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px;
+      min-height: 70px;
+      background: #fbfcfb;
+    }
+
+    .block-kpi span { display: block; color: var(--muted); font-size: 11px; }
+    .block-kpi b { display: block; margin-top: 6px; font-size: 16px; }
+
+    .exercise-list, .test-list { display: grid; gap: 10px; }
+    .exercise, .test-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 11px;
+      background: #fff;
+      display: grid;
+      gap: 8px;
+    }
+
+    .test-item {
+      grid-template-columns: minmax(120px, .35fr) minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      background: #13221d;
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: .2s ease;
+      z-index: 20;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      aside {
+        position: static;
+        height: auto;
+        padding: 14px;
+      }
+      nav { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .nav-button { justify-content: center; padding: 10px 8px; }
+      .nav-button span { display: none; }
+      .sync-box { display: none; }
+      header { position: static; align-items: flex-start; flex-direction: column; padding: 18px; }
+      .content { padding: 18px; }
+      .grid.metrics, .grid.two, .grid.three, .form, .block-grid, .score-row, .block-kpis { grid-template-columns: 1fr; }
+      .test-item { grid-template-columns: 1fr; }
+      .connection { grid-template-columns: 42px minmax(0, 1fr); }
+      .connection .btn { grid-column: 1 / -1; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="mark">Z</div>
+        <div>
+          <strong>Zona Entreno</strong>
+          <span>Polar · Strava · Sheets</span>
+        </div>
+      </div>
+
+      <nav aria-label="Vistas">
+        <button class="nav-button active" data-view="dashboard" title="Panel">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13h8V3H3v10Zm10 8h8V3h-8v18ZM3 21h8v-6H3v6Z"/></svg>
+          <span>Panel</span>
+        </button>
+        <button class="nav-button" data-view="calendar" title="Plan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <span>Plan</span>
+        </button>
+        <button class="nav-button" data-view="recovery" title="Recuperación">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg>
+          <span>Recuperación</span>
+        </button>
+        <button class="nav-button" data-view="blocks" title="Bloques">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>Bloques</span>
+        </button>
+        <button class="nav-button" data-view="connect" title="Conexiones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.1 0l2.8-2.8a5 5 0 0 0-7.1-7.1l-1.6 1.6"/><path d="M14 11a5 5 0 0 0-7.1 0l-2.8 2.8a5 5 0 0 0 7.1 7.1l1.6-1.6"/></svg>
+          <span>Conectar</span>
+        </button>
+        <button class="nav-button" data-view="settings" title="Ajustes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15.5A3.5 3.5 0 1 0 12 8a3.5 3.5 0 0 0 0 7.5Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7A2 2 0 1 1 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>
+          <span>Ajustes</span>
+        </button>
+      </nav>
+
+      <div class="sync-box">
+        <div class="sync-time">Última sincronización</div>
+        <strong id="syncLabel">Hoy, 07:12</strong>
+        <p>Datos demo activos. Al conectar tus cuentas se actualizarán sueño, pulso, carga y actividades.</p>
+      </div>
+    </aside>
+
+    <main>
+      <header>
+        <div>
+          <h1 id="pageTitle">Panel de entrenamiento</h1>
+          <p class="subhead" id="pageSubtitle">Vista rápida para decidir si apretar, mantener o recuperar.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="importCsv">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+            Importar CSV
+          </button>
+          <button class="btn primary" id="syncNow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/><path d="M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M21 3v5h-5"/></svg>
+            Sincronizar
+          </button>
+        </div>
+      </header>
+
+      <section class="content">
+        <div class="view active" id="dashboard">
+          <div class="grid metrics">
+            <article class="card metric">
+              <div class="metric-top"><span>Carga semanal</span><span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span></div>
+              <div class="value" id="loadValue">482</div>
+              <div class="trend good">+8% vs semana pasada</div>
+            </article>
+            <article class="card metric">
+              <div class="metric-top"><span>Sueño</span><span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 1 0 9 7.2A8 8 0 1 1 12 3Z"/></svg></span></div>
+              <div class="value" id="sleepValue">7h 42</div>
+              <div class="trend good">Calidad 86/100</div>
+            </article>
+            <article class="card metric">
+              <div class="metric-top"><span>Pulso reposo</span><span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></svg></span></div>
+              <div class="value" id="hrValue">46</div>
+              <div class="trend good">-2 ppm sobre tu media</div>
+            </article>
+            <article class="card metric">
+              <div class="metric-top"><span>Preparación</span><span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></span></div>
+              <div class="value" id="readinessValue">82%</div>
+              <div class="trend warn">Entrenar, sin pasarse</div>
+            </article>
+          </div>
+
+          <div class="grid two">
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Carga, sueño y forma</h2>
+                  <div class="muted small">Últimos 14 días combinando Polar, Strava y plan</div>
+                </div>
+                <span class="status-pill"><span class="dot"></span>Rango correcto</span>
+              </div>
+              <div class="chart-wrap"><canvas id="loadChart" height="300"></canvas></div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Próximas sesiones</h2>
+                  <div class="muted small">Desde tu hoja de entrenamiento</div>
+                </div>
+              </div>
+              <div class="workouts" id="upcomingWorkouts"></div>
+            </article>
+          </div>
+
+          <div class="grid three">
+            <article class="card pad">
+              <h2>Resumen Strava</h2>
+              <p class="muted">Esta semana: 58,4 km, 4h 52m, 731 m+. Mejor tendencia en Z2 y ritmo estable.</p>
+              <div class="progress"><span style="width: 72%"></span></div>
+            </article>
+            <article class="card pad">
+              <h2>Resumen Polar</h2>
+              <p class="muted">Nightly Recharge alto, ANS equilibrado y pulso nocturno estable.</p>
+              <div class="progress"><span style="width: 86%"></span></div>
+            </article>
+            <article class="card pad">
+              <h2>Decisión de hoy</h2>
+              <p class="muted" id="dailyDecision">Mantén la sesión prevista, pero limita los tramos intensos si la fatiga sube.</p>
+              <div class="progress"><span style="width: 64%; background: var(--amber)"></span></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="view" id="calendar">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h2>Plan vs realizado</h2>
+                <div class="muted small">Importa tu Google Sheet como CSV o conecta la API</div>
+              </div>
+              <button class="btn good" id="addWorkout">Añadir sesión</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Fecha</th><th>Plan</th><th>Real</th><th>RPE</th><th>Carga</th><th>Estado</th></tr>
+                </thead>
+                <tbody id="planTable"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+
+        <div class="view" id="recovery">
+          <div class="grid two">
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Sueño y recuperación</h2>
+                  <div class="muted small">Horas, calidad y consistencia</div>
+                </div>
+              </div>
+              <div class="chart-wrap"><canvas id="sleepChart" height="210"></canvas></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Pulso y fatiga</h2>
+                  <div class="muted small">Pulso en reposo, media y alerta</div>
+                </div>
+              </div>
+              <div class="chart-wrap"><canvas id="hrChart" height="210"></canvas></div>
+            </article>
+          </div>
+          <article class="card pad">
+            <h2>Lectura automática</h2>
+            <div class="insights" id="insights"></div>
+          </article>
+          <article class="card pad recommendation" id="recommendationCard">
+            <h2>Entreno recomendado por pulso nocturno</h2>
+            <strong id="recommendedWorkout">Calculando...</strong>
+            <p class="muted" id="recommendationReason">Cruzo pulso nocturno, esfuerzo reciente y tolerancia.</p>
+            <div class="score-row">
+              <div class="score"><span>Pulso nocturno vs base</span><b id="nightHrDiff">0 ppm</b></div>
+              <div class="score"><span>Esfuerzo</span><b id="effortScore">0</b></div>
+              <div class="score"><span>Tolerancia</span><b id="toleranceScore">0</b></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="view" id="blocks">
+          <article class="card pad">
+            <h2>Bloques de entrenamiento</h2>
+            <p class="muted">Sube un CSV con columna <strong>bloque</strong> y la app agrupa umbral Z4, Z2/tirada larga, series y fuerza. Para fuerza acepta ejercicios de Jefit con peso, repeticiones y serie.</p>
+          </article>
+          <div class="block-grid" id="blockGrid"></div>
+          <article class="card pad">
+            <div class="card-head" style="padding:0 0 12px">
+              <div>
+                <h2>Pruebas cada 4-6 semanas</h2>
+                <div class="muted small">Para ver si el bloque está funcionando de verdad</div>
+              </div>
+              <button class="btn good" id="addTest">Añadir prueba</button>
+            </div>
+            <div class="test-list" id="testList"></div>
+          </article>
+        </div>
+
+        <div class="view" id="connect">
+          <div class="connection-list">
+            <article class="connection">
+              <div class="logo polar">P</div>
+              <div>
+                <h3>Polar Flow</h3>
+                <div class="muted small">Sueño, Nightly Recharge, pulso, zonas, actividad diaria y sesiones grabadas.</div>
+              </div>
+              <button class="btn" data-connect="Polar">Conectar</button>
+            </article>
+            <article class="connection">
+              <div class="logo strava">S</div>
+              <div>
+                <h3>Strava</h3>
+                <div class="muted small">Actividades, segmentos, desnivel, potencia, ritmos, frecuencia cardiaca y percepción.</div>
+              </div>
+              <button class="btn" data-connect="Strava">Conectar</button>
+            </article>
+            <article class="connection">
+              <div class="logo sheets">G</div>
+              <div>
+                <h3>Google Sheets</h3>
+                <div class="muted small">Plan semanal, objetivos, notas del entrenador y sesiones pendientes.</div>
+              </div>
+              <button class="btn" data-connect="Google Sheets">Conectar</button>
+            </article>
+          </div>
+
+          <article class="card pad">
+            <h2>Arquitectura preparada</h2>
+            <p class="muted">La app ya separa las fuentes: Polar para recuperación y biometría, Strava para ejecución, y Sheets para planificación. Para datos reales hace falta crear credenciales OAuth y añadir un pequeño backend que guarde tokens de forma segura.</p>
+          </article>
+        </div>
+
+        <div class="view" id="settings">
+          <article class="card pad">
+            <h2>Preferencias del atleta</h2>
+            <form class="form" id="settingsForm">
+              <label>Deporte principal
+                <select id="sport"><option>Running</option><option>Ciclismo</option><option>Triatlón</option><option>Trail</option><option>Fuerza</option></select>
+              </label>
+              <label>Objetivo
+                <input id="goal" value="Media maratón en 1h 35m" />
+              </label>
+              <label>Horas de sueño objetivo
+                <input id="sleepTarget" type="number" step="0.25" value="8" />
+              </label>
+              <label>Pulso reposo normal
+                <input id="hrBase" type="number" value="48" />
+              </label>
+              <label class="full">Notas
+                <textarea id="notes">Priorizar constancia, controlar carga en semanas con poco sueño y cruzar datos Polar + Strava antes de subir intensidad.</textarea>
+              </label>
+              <div class="full"><button class="btn primary" type="submit">Guardar ajustes</button></div>
+            </form>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <input type="file" id="csvFile" accept=".csv,text/csv" hidden />
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const state = {
+      days: ["Jue", "Vie", "Sáb", "Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom", "Lun", "Mar", "Hoy"],
+      load: [42, 58, 20, 84, 40, 64, 72, 38, 82, 100, 18, 46, 74, 88],
+      sleep: [7.1, 7.6, 8.2, 6.4, 7.8, 7.3, 7.9, 8.1, 6.8, 7.4, 8.5, 7.2, 7.7, 7.7],
+      hr: [49, 48, 47, 51, 48, 47, 46, 48, 50, 52, 47, 46, 47, 46],
+      nightHrBase: 48,
+      effort: 63,
+      tolerance: 71,
+      plan: [
+        { date: "Hoy", plan: "Rodaje Z2 50 min + 6 rectas", real: "Pendiente", rpe: "-", load: 68, status: "Planificado" },
+        { date: "Jue", plan: "Fuerza tren inferior 45 min", real: "Pendiente", rpe: "-", load: 42, status: "Planificado" },
+        { date: "Vie", plan: "Series 5 x 1 km", real: "Pendiente", rpe: "-", load: 92, status: "Vigilar" },
+        { date: "Sáb", plan: "Descanso activo", real: "Movilidad 25 min", rpe: "2", load: 16, status: "Completado" },
+        { date: "Dom", plan: "Tirada 90 min progresiva", real: "88 min · 17,8 km", rpe: "7", load: 124, status: "Completado" }
+      ],
+      blocks: {
+        z4: { title: "Umbral Z4", mark: "4 x 8 min", km: 12.4, pace: "4:18/km", zone: "38% en Z4", progress: 68 },
+        z2: { title: "Z2 / tirada larga", mark: "90 min", km: 17.8, pace: "5:24/km", zone: "82% en Z2", progress: 76 },
+        series: { title: "Series", mark: "5 x 1 km", km: 10.2, pace: "3:58/km", zone: "41% Z4-Z5", progress: 61 },
+        strength: {
+          title: "Gimnasio fuerza",
+          mark: "Pierna + core",
+          km: "-",
+          pace: "45 min",
+          zone: "RPE 7",
+          progress: 54,
+          exercises: [
+            { name: "Sentadilla", current: "85 kg x 5", previous: "80 kg x 5", change: "+6%" },
+            { name: "Peso muerto rumano", current: "72,5 kg x 6", previous: "70 kg x 6", change: "+4%" },
+            { name: "Prensa", current: "150 kg x 8", previous: "145 kg x 8", change: "+3%" }
+          ]
+        }
+      },
+      tests: [
+        { date: "Semana 1", name: "Test 20 min umbral", result: "4:22/km · FC 168", change: "Base" },
+        { date: "Semana 5", name: "Test 20 min umbral", result: "4:15/km · FC 166", change: "+2,7%" },
+        { date: "Semana 6", name: "CMJ / fuerza", result: "36 cm · sentadilla 85 kg", change: "+5%" }
+      ]
+    };
+
+    const titles = {
+      dashboard: ["Panel de entrenamiento", "Vista rápida para decidir si apretar, mantener o recuperar."],
+      calendar: ["Plan de entrenamiento", "Tu hoja de Sheets convertida en sesiones accionables."],
+      recovery: ["Recuperación", "Sueño, pulso y señales para ajustar la carga."],
+      blocks: ["Bloques", "Sesiones agrupadas por tipo de entreno y progreso cada 4-6 semanas."],
+      connect: ["Conexiones", "Polar, Strava y Google Sheets preparados para OAuth."],
+      settings: ["Ajustes", "Objetivos y umbrales personales para afinar el análisis."]
+    };
+
+    const qs = (selector) => document.querySelector(selector);
+    const qsa = (selector) => [...document.querySelectorAll(selector)];
+
+    function showToast(message) {
+      const toast = qs("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function drawChart(canvas, series, options = {}) {
+      const ctx = canvas.getContext("2d");
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(320, Math.floor(rect.width * dpr));
+      canvas.height = Math.floor((options.height || canvas.getAttribute("height") || 240) * dpr);
+      ctx.scale(dpr, dpr);
+
+      const width = canvas.width / dpr;
+      const height = canvas.height / dpr;
+      const pad = { top: 18, right: 16, bottom: 34, left: 40 };
+      const values = series.flatMap(item => item.values);
+      const min = Math.min(...values, options.min ?? Infinity);
+      const max = Math.max(...values, options.max ?? -Infinity);
+      const span = Math.max(1, max - min);
+      const plotW = width - pad.left - pad.right;
+      const plotH = height - pad.top - pad.bottom;
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = "#dce3dd";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "#65706b";
+      ctx.font = "12px Inter, system-ui";
+
+      for (let i = 0; i < 4; i++) {
+        const y = pad.top + (plotH / 3) * i;
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(width - pad.right, y);
+        ctx.stroke();
+      }
+
+      const labels = options.labels || state.days;
+      labels.forEach((label, index) => {
+        if (index % Math.ceil(labels.length / 7) !== 0 && index !== labels.length - 1) return;
+        const x = pad.left + (plotW / Math.max(1, labels.length - 1)) * index;
+        ctx.fillText(label, x - 10, height - 10);
+      });
+
+      series.forEach(item => {
+        const points = item.values.map((value, index) => ({
+          x: pad.left + (plotW / Math.max(1, item.values.length - 1)) * index,
+          y: pad.top + plotH - ((value - min) / span) * plotH
+        }));
+
+        const drawSmoothPath = () => {
+          ctx.beginPath();
+          points.forEach((point, index) => {
+            if (index === 0) {
+              ctx.moveTo(point.x, point.y);
+              return;
+            }
+            const previous = points[index - 1];
+            const midX = (previous.x + point.x) / 2;
+            ctx.quadraticCurveTo(previous.x, previous.y, midX, (previous.y + point.y) / 2);
+            ctx.quadraticCurveTo(point.x, point.y, point.x, point.y);
+          });
+        };
+
+        ctx.strokeStyle = item.color;
+        ctx.lineWidth = item.width || 3;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        drawSmoothPath();
+        ctx.stroke();
+
+        if (item.fill) {
+          const gradient = ctx.createLinearGradient(0, pad.top, 0, height - pad.bottom);
+          gradient.addColorStop(0, item.fill);
+          gradient.addColorStop(1, "rgba(255,255,255,0)");
+          drawSmoothPath();
+          ctx.lineTo(width - pad.right, height - pad.bottom);
+          ctx.lineTo(pad.left, height - pad.bottom);
+          ctx.closePath();
+          ctx.fillStyle = gradient;
+          ctx.fill();
+        }
+      });
+    }
+
+    function renderWorkouts() {
+      qs("#upcomingWorkouts").innerHTML = state.plan.slice(0, 4).map(item => {
+        const dotClass = item.status === "Vigilar" ? "warn" : item.status === "Completado" ? "" : "bad";
+        const progress = Math.min(100, Math.round(item.load));
+        return `
+          <div class="workout">
+            <div class="workout-main">
+              <div>
+                <div class="workout-title">${item.plan}</div>
+                <div class="muted small">${item.date} · carga prevista ${item.load}</div>
+              </div>
+              <span class="status-pill"><span class="dot ${dotClass}"></span>${item.status}</span>
+            </div>
+            <div class="progress"><span style="width:${progress}%; background:${item.status === "Vigilar" ? "var(--amber)" : "var(--green)"}"></span></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderPlan() {
+      qs("#planTable").innerHTML = state.plan.map(item => {
+        const statusClass = item.status === "Vigilar" ? "warn" : item.status === "Planificado" ? "bad" : "";
+        return `
+          <tr>
+            <td>${item.date}</td>
+            <td>${item.plan}</td>
+            <td>${item.real}</td>
+            <td>${item.rpe}</td>
+            <td>${item.load}</td>
+            <td><span class="status-pill"><span class="dot ${statusClass}"></span>${item.status}</span></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderInsights() {
+      const nightDiff = state.hr.at(-1) - state.nightHrBase;
+      const gap = state.effort - state.tolerance;
+      const insights = [
+        ["Sueño suficiente", "Has dormido cerca del objetivo. Buen día para trabajo aeróbico o fuerza controlada."],
+        ["Pulso nocturno", nightDiff <= 0 ? "Está por debajo de tu base: buena señal para asimilar entrenamiento." : `Está ${nightDiff} ppm por encima de tu base: conviene bajar intensidad.`],
+        ["Esfuerzo vs tolerancia", gap <= 0 ? "Tu tolerancia está por encima del esfuerzo reciente. Puedes mantener el plan." : `El esfuerzo supera tu tolerancia por ${gap} puntos. Mejor ajustar.`]
+      ];
+      qs("#insights").innerHTML = insights.map(([title, text]) => `
+        <div class="insight">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+          <div><strong>${title}</strong><p>${text}</p></div>
+        </div>
+      `).join("");
+    }
+
+    function getRecommendation() {
+      const nightDiff = state.hr.at(-1) - state.nightHrBase;
+      const gap = state.effort - state.tolerance;
+      if (nightDiff <= -2 && gap <= -8) {
+        return { level: "good", workout: "Umbral Z4 controlado", reason: "Pulso nocturno bajo y tolerancia por encima del esfuerzo. Buen día para calidad, sin buscar récord.", width: 78 };
+      }
+      if (nightDiff <= 1 && gap <= 0) {
+        return { level: "good", workout: "Z2 / tirada larga suave", reason: "Señales estables. Mantén volumen aeróbico y deja que el cuerpo asimile.", width: 68 };
+      }
+      if (nightDiff <= 3 && gap <= 10) {
+        return { level: "warn", workout: "Rodaje fácil + movilidad", reason: "Hay algo de fatiga. Suma trabajo, pero evita series o Z4 larga.", width: 48 };
+      }
+      return { level: "bad", workout: "Recuperación o descanso", reason: "Pulso nocturno alto o esfuerzo por encima de tolerancia. Mejor proteger la semana.", width: 28 };
+    }
+
+    function renderRecommendation() {
+      const recommendation = getRecommendation();
+      const card = qs("#recommendationCard");
+      const nightDiff = state.hr.at(-1) - state.nightHrBase;
+      card.classList.toggle("warn", recommendation.level === "warn");
+      card.classList.toggle("bad", recommendation.level === "bad");
+      qs("#recommendedWorkout").textContent = recommendation.workout;
+      qs("#recommendationReason").textContent = recommendation.reason;
+      qs("#dailyDecision").textContent = `${recommendation.workout}: ${recommendation.reason}`;
+      qs("#nightHrDiff").textContent = `${nightDiff > 0 ? "+" : ""}${nightDiff} ppm`;
+      qs("#effortScore").textContent = state.effort;
+      qs("#toleranceScore").textContent = state.tolerance;
+    }
+
+    function renderBlocks() {
+      const blocks = Object.values(state.blocks);
+      qs("#blockGrid").innerHTML = blocks.map(block => `
+        <article class="card block-card">
+          <div class="block-head">
+            <div>
+              <h2>${block.title}</h2>
+              <div class="muted small">${block.title === "Gimnasio fuerza" ? "Importable desde Jefit CSV" : "Resumen del bloque importado"}</div>
+            </div>
+            <span class="status-pill"><span class="dot"></span>${block.progress}%</span>
+          </div>
+          <div class="block-kpis">
+            <div class="block-kpi"><span>Marca</span><b>${block.mark}</b></div>
+            <div class="block-kpi"><span>Km</span><b>${block.km}</b></div>
+            <div class="block-kpi"><span>Ritmo</span><b>${block.pace}</b></div>
+            <div class="block-kpi"><span>Zona</span><b>${block.zone}</b></div>
+          </div>
+          <div class="progress"><span style="width:${block.progress}%; background:${block.progress > 70 ? "var(--green)" : "var(--amber)"}"></span></div>
+          ${block.exercises ? `
+            <div class="exercise-list">
+              ${block.exercises.map(exercise => `
+                <div class="exercise">
+                  <div class="workout-main"><strong>${exercise.name}</strong><span class="tag">${exercise.change}</span></div>
+                  <div class="muted small">${exercise.previous} → ${exercise.current}</div>
+                </div>
+              `).join("")}
+            </div>
+          ` : ""}
+        </article>
+      `).join("");
+    }
+
+    function renderTests() {
+      qs("#testList").innerHTML = state.tests.map(test => `
+        <div class="test-item">
+          <strong>${test.date}</strong>
+          <div>
+            <div>${test.name}</div>
+            <div class="muted small">${test.result}</div>
+          </div>
+          <span class="status-pill"><span class="dot"></span>${test.change}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderCharts() {
+      drawChart(qs("#loadChart"), [
+        { values: state.load, color: "#0f8f6d", fill: "rgba(15,143,109,.08)" },
+        { values: state.sleep.map(v => v * 10), color: "#345fd8", width: 2 },
+        { values: state.hr, color: "#c27a19", width: 2 }
+      ], { labels: state.days, height: 300 });
+      drawChart(qs("#sleepChart"), [{ values: state.sleep, color: "#345fd8", fill: "rgba(52,95,216,.08)" }], { labels: state.days, min: 5.5, max: 9, height: 210 });
+      drawChart(qs("#hrChart"), [{ values: state.hr, color: "#c94b4b", fill: "rgba(201,75,75,.07)" }], { labels: state.days, min: 42, max: 56, height: 210 });
+    }
+
+    function syncSummary() {
+      const totalLoad = state.load.slice(-7).reduce((sum, value) => sum + value, 0);
+      const sleepAvg = state.sleep.slice(-7).reduce((sum, value) => sum + value, 0) / 7;
+      const hrLast = state.hr.at(-1);
+      const readiness = Math.max(48, Math.min(96, Math.round(70 + (sleepAvg - 7) * 8 + (48 - hrLast) * 2 - Math.max(0, totalLoad - 480) / 24)));
+      qs("#loadValue").textContent = totalLoad;
+      qs("#sleepValue").textContent = `${Math.floor(sleepAvg)}h ${Math.round((sleepAvg % 1) * 60).toString().padStart(2, "0")}`;
+      qs("#hrValue").textContent = hrLast;
+      qs("#readinessValue").textContent = `${readiness}%`;
+    }
+
+    function switchView(id) {
+      qsa(".nav-button").forEach(button => button.classList.toggle("active", button.dataset.view === id));
+      qsa(".view").forEach(view => view.classList.toggle("active", view.id === id));
+      qs("#pageTitle").textContent = titles[id][0];
+      qs("#pageSubtitle").textContent = titles[id][1];
+      requestAnimationFrame(renderCharts);
+    }
+
+    function parseCsv(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (lines.length < 2) return [];
+      const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
+      const hasPlanColumns = headers.some(h => ["fecha", "date", "plan", "entreno", "workout", "real", "realizado"].includes(h));
+      if (!hasPlanColumns) return [];
+      return lines.slice(1).map(line => {
+        const cells = line.split(",").map(cell => cell.trim());
+        const get = (...names) => {
+          const index = headers.findIndex(h => names.includes(h));
+          return index >= 0 ? cells[index] : "";
+        };
+        return {
+          date: get("fecha", "date") || "Sin fecha",
+          plan: get("plan", "entreno", "workout") || "Sesión importada",
+          real: get("real", "realizado", "done") || "Pendiente",
+          rpe: get("rpe", "esfuerzo") || "-",
+          load: Number(get("carga", "load")) || 50,
+          status: get("estado", "status") || "Importado"
+        };
+      });
+    }
+
+    function parseRows(text) {
+      const lines = text.trim().split(/\r?\n/).filter(Boolean);
+      if (lines.length < 2) return [];
+      const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
+      return lines.slice(1).map(line => {
+        const cells = line.split(",").map(cell => cell.trim());
+        const row = {};
+        headers.forEach((header, index) => row[header] = cells[index] || "");
+        return row;
+      });
+    }
+
+    function blockKey(value) {
+      const normalized = (value || "").toLowerCase();
+      if (normalized.includes("z4") || normalized.includes("umbral")) return "z4";
+      if (normalized.includes("z2") || normalized.includes("tirada") || normalized.includes("larga")) return "z2";
+      if (normalized.includes("serie") || normalized.includes("interval")) return "series";
+      if (normalized.includes("fuerza") || normalized.includes("gym") || normalized.includes("jefit")) return "strength";
+      return "";
+    }
+
+    function updateBlocksFromRows(rows) {
+      let touched = 0;
+      rows.forEach(row => {
+        const key = blockKey(row.bloque || row.block || row.tipo || row.type);
+        if (!key || !state.blocks[key]) return;
+        const block = state.blocks[key];
+        block.mark = row.marca || row.mark || row.sesion || row.session || block.mark;
+        block.km = row.km || row.distancia || row.distance || block.km;
+        block.pace = row.ritmo || row.pace || row.tiempo || row.time || block.pace;
+        block.zone = row.zona || row.zone || row.z4 || row.z2 || block.zone;
+        block.progress = Number(row.progreso || row.progress || block.progress) || block.progress;
+
+        const exerciseName = row.ejercicio || row.exercise;
+        if (key === "strength" && exerciseName) {
+          block.exercises = block.exercises || [];
+          block.exercises.unshift({
+            name: exerciseName,
+            current: row.actual || row.current || `${row.peso || row.weight || "-"} kg x ${row.reps || "-"}`,
+            previous: row.anterior || row.previous || "Sin dato previo",
+            change: row.cambio || row.change || row.progreso || "Nuevo"
+          });
+          block.exercises = block.exercises.slice(0, 5);
+        }
+        touched += 1;
+      });
+      return touched;
+    }
+
+    function updateTestsFromRows(rows) {
+      const tests = rows
+        .filter(row => row.prueba || row.test)
+        .map(row => ({
+          date: row.fecha || row.date || row.semana || row.week || "Sin fecha",
+          name: row.prueba || row.test,
+          result: row.resultado || row.result || row.marca || row.mark || "Pendiente",
+          change: row.cambio || row.change || row.progreso || row.progress || "-"
+        }));
+      if (tests.length) state.tests = [...tests, ...state.tests].slice(0, 8);
+      return tests.length;
+    }
+
+    qsa(".nav-button").forEach(button => button.addEventListener("click", () => switchView(button.dataset.view)));
+
+    qs("#syncNow").addEventListener("click", () => {
+      const now = new Date();
+      qs("#syncLabel").textContent = `Hoy, ${now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
+      showToast("Sincronización demo completada");
+    });
+
+    qs("#importCsv").addEventListener("click", () => qs("#csvFile").click());
+    qs("#csvFile").addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      const rows = parseRows(text);
+      const touchedBlocks = updateBlocksFromRows(rows);
+      const touchedTests = updateTestsFromRows(rows);
+      const imported = parseCsv(text);
+      if (imported.length) {
+        state.plan = imported;
+        renderPlan();
+        renderWorkouts();
+        renderBlocks();
+        renderTests();
+        showToast(`${imported.length} sesiones, ${touchedBlocks} bloques y ${touchedTests} pruebas importados`);
+      } else if (touchedBlocks || touchedTests) {
+        renderBlocks();
+        renderTests();
+        showToast(`${touchedBlocks} bloques y ${touchedTests} pruebas importados`);
+      } else {
+        showToast("No he encontrado sesiones en el CSV");
+      }
+    });
+
+    qs("#addWorkout").addEventListener("click", () => {
+      state.plan.unshift({ date: "Nuevo", plan: "Sesión manual", real: "Pendiente", rpe: "-", load: 55, status: "Planificado" });
+      renderPlan();
+      renderWorkouts();
+      showToast("Sesión añadida");
+    });
+
+    qs("#addTest").addEventListener("click", () => {
+      state.tests.unshift({ date: "Nueva", name: "Prueba 4-6 semanas", result: "Pendiente", change: "Plan" });
+      renderTests();
+      showToast("Prueba añadida");
+    });
+
+    qsa("[data-connect]").forEach(button => button.addEventListener("click", () => {
+      showToast(`${button.dataset.connect}: falta configurar OAuth real`);
+    }));
+
+    qs("#settingsForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      showToast("Ajustes guardados en esta sesión");
+    });
+
+    window.addEventListener("resize", renderCharts);
+
+    renderWorkouts();
+    renderPlan();
+    renderInsights();
+    renderRecommendation();
+    renderBlocks();
+    renderTests();
+    syncSummary();
+    renderCharts();
+  </script>
+</body>
+</html>
