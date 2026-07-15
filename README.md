@@ -39,6 +39,15 @@ Y pruebas cada 4-6 semanas con `plantilla-pruebas.csv`:
 - `resultado`
 - `cambio`
 
+Para nutrición puedes importar `plantilla-nutricion.csv`:
+
+- `fecha`
+- `calorias`
+- `proteina`
+- `carbohidratos`
+- `grasas`
+- `objetivo_calorias`
+
 ## Siguiente paso para datos reales
 
 Para conectar cuentas reales hay que añadir un backend con OAuth:
@@ -46,6 +55,8 @@ Para conectar cuentas reales hay que añadir un backend con OAuth:
 - Polar AccessLink: sueño, Nightly Recharge, pulso, actividad diaria y entrenamientos.
 - Strava API: actividades, ritmo, desnivel, frecuencia cardiaca, potencia y segmentos.
 - Google Sheets API: lectura del plan de entrenamiento.
+- Jefit: fuerza por exportación CSV mientras no haya API pública oficial disponible.
+- MyFitnessPal: calorías y macros por exportación CSV; en Android también puede estudiarse Health Connect como puente.
 
 La app ya tiene la interfaz y la separación de fuentes preparada para esa conexión.
 

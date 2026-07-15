@@ -204,6 +204,28 @@
     .trend.warn { color: var(--amber); }
     .trend.bad { color: var(--red); }
 
+    .mesocycle-banner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      background: linear-gradient(135deg, #ffffff, #eef7f3);
+    }
+
+    .mesocycle-banner strong {
+      display: block;
+      font-size: clamp(20px, 3vw, 28px);
+      line-height: 1.08;
+    }
+
+    .mesocycle-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
     .chart-wrap { padding: 12px 18px 18px; }
     canvas { width: 100%; max-width: 100%; display: block; }
     #loadChart { height: 300px; }
@@ -278,6 +300,8 @@
     .logo.polar { background: #d91e35; }
     .logo.strava { background: #fc4c02; }
     .logo.sheets { background: #1f9d55; }
+    .logo.jefit { background: #2352a2; }
+    .logo.mfp { background: #1f7ed0; }
 
     .form {
       display: grid;
@@ -391,6 +415,23 @@
       align-items: center;
     }
 
+    .nutrition-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .macro {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfb;
+    }
+
+    .macro span { display: block; color: var(--muted); font-size: 11px; }
+    .macro b { display: block; margin-top: 5px; font-size: 18px; }
+
     .toast {
       position: fixed;
       right: 22px;
@@ -422,7 +463,7 @@
       .sync-box { display: none; }
       header { position: static; align-items: flex-start; flex-direction: column; padding: 18px; }
       .content { padding: 18px; }
-      .grid.metrics, .grid.two, .grid.three, .form, .block-grid, .score-row, .block-kpis { grid-template-columns: 1fr; }
+      .grid.metrics, .grid.two, .grid.three, .form, .block-grid, .score-row, .block-kpis, .nutrition-grid, .mesocycle-banner { grid-template-columns: 1fr; }
       .test-item { grid-template-columns: 1fr; }
       .connection { grid-template-columns: 42px minmax(0, 1fr); }
       .connection .btn { grid-column: 1 / -1; justify-content: center; }
@@ -494,6 +535,19 @@
 
       <section class="content">
         <div class="view active" id="dashboard">
+          <article class="card mesocycle-banner">
+            <div>
+              <div class="muted small">Mesociclo actual</div>
+              <strong id="mesocycleName">Base aeróbica + fuerza útil</strong>
+              <div class="mesocycle-meta">
+                <span class="tag" id="mesocycleWeek">Semana 3 de 6</span>
+                <span class="tag" id="mesocycleGoal">Objetivo: subir tolerancia sin perder frescura</span>
+                <span class="tag" id="mesocycleTest">Próxima prueba: semana 6</span>
+              </div>
+            </div>
+            <button class="btn" id="renameMesocycle">Editar nombre</button>
+          </article>
+
           <div class="grid metrics">
             <article class="card metric">
               <div class="metric-top"><span>Carga semanal</span><span class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span></div>
@@ -555,6 +609,11 @@
               <h2>Decisión de hoy</h2>
               <p class="muted" id="dailyDecision">Mantén la sesión prevista, pero limita los tramos intensos si la fatiga sube.</p>
               <div class="progress"><span style="width: 64%; background: var(--amber)"></span></div>
+            </article>
+            <article class="card pad">
+              <h2>Nutrición</h2>
+              <p class="muted" id="nutritionSummary">Déficit suave compatible con carga moderada.</p>
+              <div class="nutrition-grid" id="nutritionGrid"></div>
             </article>
           </div>
         </div>
@@ -660,11 +719,27 @@
               </div>
               <button class="btn" data-connect="Google Sheets">Conectar</button>
             </article>
+            <article class="connection">
+              <div class="logo jefit">J</div>
+              <div>
+                <h3>Jefit</h3>
+                <div class="muted small">Fuerza, ejercicios, series, repeticiones, pesos, volumen y progresión. Preparado para CSV/export hasta tener API oficial.</div>
+              </div>
+              <button class="btn" data-connect="Jefit">Importar CSV</button>
+            </article>
+            <article class="connection">
+              <div class="logo mfp">M</div>
+              <div>
+                <h3>MyFitnessPal</h3>
+                <div class="muted small">Calorías, proteína, grasas, carbohidratos y balance energético. Preparado para CSV/export y posible lectura vía Health Connect.</div>
+              </div>
+              <button class="btn" data-connect="MyFitnessPal">Importar CSV</button>
+            </article>
           </div>
 
           <article class="card pad">
             <h2>Arquitectura preparada</h2>
-            <p class="muted">La app ya separa las fuentes: Polar para recuperación y biometría, Strava para ejecución, y Sheets para planificación. Para datos reales hace falta crear credenciales OAuth y añadir un pequeño backend que guarde tokens de forma segura.</p>
+            <p class="muted">La app ya separa las fuentes: Polar para recuperación y biometría, Strava para ejecución, Sheets para planificación, Jefit para fuerza y MyFitnessPal para nutrición. Para OAuth real hace falta añadir un pequeño backend que guarde tokens y secretos de forma segura.</p>
           </article>
         </div>
 
@@ -677,6 +752,12 @@
               </label>
               <label>Objetivo
                 <input id="goal" value="Media maratón en 1h 35m" />
+              </label>
+              <label>Nombre del mesociclo
+                <input id="mesocycleInput" value="Base aeróbica + fuerza útil" />
+              </label>
+              <label>Semana del mesociclo
+                <input id="mesocycleWeekInput" value="Semana 3 de 6" />
               </label>
               <label>Horas de sueño objetivo
                 <input id="sleepTarget" type="number" step="0.25" value="8" />
@@ -707,6 +788,19 @@
       nightHrBase: 48,
       effort: 63,
       tolerance: 71,
+      mesocycle: {
+        name: "Base aeróbica + fuerza útil",
+        week: "Semana 3 de 6",
+        goal: "Objetivo: subir tolerancia sin perder frescura",
+        nextTest: "Próxima prueba: semana 6"
+      },
+      nutrition: {
+        calories: 2860,
+        protein: 178,
+        carbs: 342,
+        fat: 82,
+        targetCalories: 3000
+      },
       plan: [
         { date: "Hoy", plan: "Rodaje Z2 50 min + 6 rectas", real: "Pendiente", rpe: "-", load: 68, status: "Planificado" },
         { date: "Jue", plan: "Fuerza tren inferior 45 min", real: "Pendiente", rpe: "-", load: 42, status: "Planificado" },
@@ -812,9 +906,14 @@
               return;
             }
             const previous = points[index - 1];
-            const midX = (previous.x + point.x) / 2;
-            ctx.quadraticCurveTo(previous.x, previous.y, midX, (previous.y + point.y) / 2);
-            ctx.quadraticCurveTo(point.x, point.y, point.x, point.y);
+            const beforePrevious = points[index - 2] || previous;
+            const next = points[index + 1] || point;
+            const tension = 0.22;
+            const cp1x = previous.x + (point.x - beforePrevious.x) * tension;
+            const cp1y = previous.y + (point.y - beforePrevious.y) * tension;
+            const cp2x = point.x - (next.x - previous.x) * tension;
+            const cp2y = point.y - (next.y - previous.y) * tension;
+            ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, point.x, point.y);
           });
         };
 
@@ -964,11 +1063,38 @@
       `).join("");
     }
 
+    function renderMesocycle() {
+      qs("#mesocycleName").textContent = state.mesocycle.name;
+      qs("#mesocycleWeek").textContent = state.mesocycle.week;
+      qs("#mesocycleGoal").textContent = state.mesocycle.goal;
+      qs("#mesocycleTest").textContent = state.mesocycle.nextTest;
+      qs("#mesocycleInput").value = state.mesocycle.name;
+      qs("#mesocycleWeekInput").value = state.mesocycle.week;
+    }
+
+    function renderNutrition() {
+      const n = state.nutrition;
+      const delta = n.calories - n.targetCalories;
+      qs("#nutritionSummary").textContent = delta < -150
+        ? `Déficit de ${Math.abs(delta)} kcal: vigila recuperación en días de calidad.`
+        : delta > 150
+          ? `Superávit de ${delta} kcal: útil si buscas subir carga o fuerza.`
+          : "Energía bastante alineada con el objetivo del mesociclo.";
+      qs("#nutritionGrid").innerHTML = [
+        ["Calorías", `${n.calories} kcal`],
+        ["Proteína", `${n.protein} g`],
+        ["Carbohidratos", `${n.carbs} g`],
+        ["Grasas", `${n.fat} g`]
+      ].map(([label, value]) => `
+        <div class="macro"><span>${label}</span><b>${value}</b></div>
+      `).join("");
+    }
+
     function renderCharts() {
       drawChart(qs("#loadChart"), [
-        { values: state.load, color: "#0f8f6d", fill: "rgba(15,143,109,.08)" },
-        { values: state.sleep.map(v => v * 10), color: "#345fd8", width: 2 },
-        { values: state.hr, color: "#c27a19", width: 2 }
+        { values: state.load, color: "#0f8f6d", fill: "rgba(15,143,109,.06)" },
+        { values: state.sleep.map(v => v * 10), color: "#345fd8", fill: "rgba(52,95,216,.045)", width: 2 },
+        { values: state.hr, color: "#c27a19", fill: "rgba(194,122,25,.04)", width: 2 }
       ], { labels: state.days, height: 300 });
       drawChart(qs("#sleepChart"), [{ values: state.sleep, color: "#345fd8", fill: "rgba(52,95,216,.08)" }], { labels: state.days, min: 5.5, max: 9, height: 210 });
       drawChart(qs("#hrChart"), [{ values: state.hr, color: "#c94b4b", fill: "rgba(201,75,75,.07)" }], { labels: state.days, min: 42, max: 56, height: 210 });
@@ -1078,6 +1204,32 @@
       return tests.length;
     }
 
+    function numberFromRow(row, names) {
+      for (const name of names) {
+        const raw = row[name];
+        if (!raw) continue;
+        const value = Number(String(raw).replace(",", ".").replace(/[^\d.-]/g, ""));
+        if (Number.isFinite(value)) return value;
+      }
+      return null;
+    }
+
+    function updateNutritionFromRows(rows) {
+      const macroRows = rows.filter(row =>
+        row.calorias || row.calories || row.kcal || row.proteina || row.protein ||
+        row.carbohidratos || row.carbs || row.grasas || row.fat
+      );
+      if (!macroRows.length) return 0;
+
+      const latest = macroRows.at(-1);
+      state.nutrition.calories = numberFromRow(latest, ["calorias", "calories", "kcal"]) ?? state.nutrition.calories;
+      state.nutrition.protein = numberFromRow(latest, ["proteina", "protein", "proteínas", "proteins"]) ?? state.nutrition.protein;
+      state.nutrition.carbs = numberFromRow(latest, ["carbohidratos", "carbs", "hidratos", "carbohydrate"]) ?? state.nutrition.carbs;
+      state.nutrition.fat = numberFromRow(latest, ["grasas", "fat", "grasa"]) ?? state.nutrition.fat;
+      state.nutrition.targetCalories = numberFromRow(latest, ["objetivo_calorias", "target_calories", "calorias_objetivo"]) ?? state.nutrition.targetCalories;
+      return macroRows.length;
+    }
+
     qsa(".nav-button").forEach(button => button.addEventListener("click", () => switchView(button.dataset.view)));
 
     qs("#syncNow").addEventListener("click", () => {
@@ -1094,6 +1246,7 @@
       const rows = parseRows(text);
       const touchedBlocks = updateBlocksFromRows(rows);
       const touchedTests = updateTestsFromRows(rows);
+      const touchedNutrition = updateNutritionFromRows(rows);
       const imported = parseCsv(text);
       if (imported.length) {
         state.plan = imported;
@@ -1101,11 +1254,13 @@
         renderWorkouts();
         renderBlocks();
         renderTests();
-        showToast(`${imported.length} sesiones, ${touchedBlocks} bloques y ${touchedTests} pruebas importados`);
-      } else if (touchedBlocks || touchedTests) {
+        renderNutrition();
+        showToast(`${imported.length} sesiones, ${touchedBlocks} bloques, ${touchedTests} pruebas y ${touchedNutrition} días de nutrición importados`);
+      } else if (touchedBlocks || touchedTests || touchedNutrition) {
         renderBlocks();
         renderTests();
-        showToast(`${touchedBlocks} bloques y ${touchedTests} pruebas importados`);
+        renderNutrition();
+        showToast(`${touchedBlocks} bloques, ${touchedTests} pruebas y ${touchedNutrition} días de nutrición importados`);
       } else {
         showToast("No he encontrado sesiones en el CSV");
       }
@@ -1130,7 +1285,15 @@
 
     qs("#settingsForm").addEventListener("submit", (event) => {
       event.preventDefault();
+      state.mesocycle.name = qs("#mesocycleInput").value.trim() || state.mesocycle.name;
+      state.mesocycle.week = qs("#mesocycleWeekInput").value.trim() || state.mesocycle.week;
+      renderMesocycle();
       showToast("Ajustes guardados en esta sesión");
+    });
+
+    qs("#renameMesocycle").addEventListener("click", () => {
+      switchView("settings");
+      qs("#mesocycleInput").focus();
     });
 
     window.addEventListener("resize", renderCharts);
@@ -1141,6 +1304,8 @@
     renderRecommendation();
     renderBlocks();
     renderTests();
+    renderMesocycle();
+    renderNutrition();
     syncSummary();
     renderCharts();
   </script>
