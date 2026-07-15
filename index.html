@@ -466,7 +466,29 @@
       .grid.metrics, .grid.two, .grid.three, .form, .block-grid, .score-row, .block-kpis, .nutrition-grid, .mesocycle-banner { grid-template-columns: 1fr; }
       .test-item { grid-template-columns: 1fr; }
       .connection { grid-template-columns: 42px minmax(0, 1fr); }
-      .connection .btn { grid-column: 1 / -1; justify-content: center; }
+    .connection .btn { grid-column: 1 / -1; justify-content: center; }
+    }
+
+    .setup-panel {
+      display: grid;
+      gap: 12px;
+    }
+
+    .setup-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .provider-status {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (max-width: 980px) {
+      .setup-row, .provider-status { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -694,6 +716,21 @@
         </div>
 
         <div class="view" id="connect">
+          <article class="card pad setup-panel">
+            <div>
+              <h2>Conexión fácil</h2>
+              <p class="muted">Primero despliega o ejecuta el backend de la carpeta <strong>backend</strong>. Después pega aquí su URL y conecta cada servicio.</p>
+            </div>
+            <div class="setup-row">
+              <label>URL del backend
+                <input id="backendUrl" placeholder="http://localhost:8787 o https://tu-backend.com" />
+              </label>
+              <button class="btn" id="saveBackendUrl">Guardar</button>
+              <button class="btn primary" id="checkBackend">Comprobar</button>
+            </div>
+            <div class="provider-status" id="providerStatus"></div>
+          </article>
+
           <div class="connection-list">
             <article class="connection">
               <div class="logo polar">P</div>
@@ -739,7 +776,7 @@
 
           <article class="card pad">
             <h2>Arquitectura preparada</h2>
-            <p class="muted">La app ya separa las fuentes: Polar para recuperación y biometría, Strava para ejecución, Sheets para planificación, Jefit para fuerza y MyFitnessPal para nutrición. Para OAuth real hace falta añadir un pequeño backend que guarde tokens y secretos de forma segura.</p>
+            <p class="muted">La app ya separa las fuentes: Polar para recuperación y biometría, Strava para ejecución, Sheets para planificación, Jefit para fuerza y MyFitnessPal para nutrición. El backend incluido guarda secretos fuera de GitHub Pages y expone una sincronización simple para el panel.</p>
           </article>
         </div>
 
@@ -844,6 +881,7 @@
 
     const qs = (selector) => document.querySelector(selector);
     const qsa = (selector) => [...document.querySelectorAll(selector)];
+    const backendStorageKey = "apexBackendUrl";
 
     function showToast(message) {
       const toast = qs("#toast");
@@ -851,6 +889,76 @@
       toast.classList.add("show");
       window.clearTimeout(showToast.timer);
       showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function getBackendUrl() {
+      return (localStorage.getItem(backendStorageKey) || qs("#backendUrl")?.value || "").trim().replace(/\/$/, "");
+    }
+
+    function setBackendUrl(value) {
+      const clean = value.trim().replace(/\/$/, "");
+      if (clean) localStorage.setItem(backendStorageKey, clean);
+      if (qs("#backendUrl")) qs("#backendUrl").value = clean;
+      return clean;
+    }
+
+    function renderProviderStatus(status = null) {
+      const providers = status?.providers || {
+        polar: { configured: false, connected: false },
+        strava: { configured: false, connected: false },
+        sheets: { configured: false, connected: false },
+        jefit: { configured: true, connected: false, mode: "csv" },
+        myfitnesspal: { configured: true, connected: false, mode: "csv" }
+      };
+      const labels = { polar: "Polar", strava: "Strava", sheets: "Sheets", jefit: "Jefit", myfitnesspal: "MyFitnessPal" };
+      qs("#providerStatus").innerHTML = Object.entries(providers).map(([key, value]) => {
+        const ok = value.connected || value.configured;
+        const text = value.connected ? "Conectado" : value.configured ? (value.mode === "csv" ? "CSV listo" : "Configurado") : "Falta configurar";
+        return `<span class="status-pill"><span class="dot ${ok ? "" : "bad"}"></span>${labels[key]} · ${text}</span>`;
+      }).join("");
+    }
+
+    async function checkBackendStatus() {
+      const backend = getBackendUrl();
+      if (!backend) {
+        renderProviderStatus();
+        showToast("Pega primero la URL del backend");
+        return null;
+      }
+      const response = await fetch(`${backend}/config/status`);
+      if (!response.ok) throw new Error("Backend no responde");
+      const status = await response.json();
+      renderProviderStatus(status);
+      showToast("Backend comprobado");
+      return status;
+    }
+
+    async function syncFromBackend() {
+      const backend = getBackendUrl();
+      if (!backend) {
+        showToast("Pega primero la URL del backend");
+        return;
+      }
+      const response = await fetch(`${backend}/sync`);
+      if (!response.ok) throw new Error("No he podido sincronizar");
+      const data = await response.json();
+      if (Array.isArray(data.strava?.activities)) {
+        const km = data.strava.activities.reduce((sum, item) => sum + (item.distance || 0), 0) / 1000;
+        qs("#dailyDecision").textContent = `Sincronizado con Strava: ${km.toFixed(1)} km recientes disponibles para analizar.`;
+      }
+      if (Array.isArray(data.sheets?.rows) && data.sheets.rows.length) {
+        state.plan = data.sheets.rows.map(row => ({
+          date: row.fecha || row.date || "Sin fecha",
+          plan: row.plan || row.entreno || row.workout || "Sesión planificada",
+          real: row.real || row.realizado || "Pendiente",
+          rpe: row.rpe || "-",
+          load: Number(row.carga || row.load || 50),
+          status: row.estado || row.status || "Importado"
+        }));
+        renderPlan();
+        renderWorkouts();
+      }
+      showToast("Datos sincronizados desde el backend");
     }
 
     function drawChart(canvas, series, options = {}) {
@@ -1235,7 +1343,7 @@
     qs("#syncNow").addEventListener("click", () => {
       const now = new Date();
       qs("#syncLabel").textContent = `Hoy, ${now.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
-      showToast("Sincronización demo completada");
+      syncFromBackend().catch(() => showToast("Sincronización demo completada"));
     });
 
     qs("#importCsv").addEventListener("click", () => qs("#csvFile").click());
@@ -1279,8 +1387,35 @@
       showToast("Prueba añadida");
     });
 
+    qs("#saveBackendUrl").addEventListener("click", () => {
+      setBackendUrl(qs("#backendUrl").value);
+      showToast("URL del backend guardada");
+    });
+
+    qs("#checkBackend").addEventListener("click", () => {
+      setBackendUrl(qs("#backendUrl").value);
+      checkBackendStatus().catch(() => showToast("No puedo conectar con el backend"));
+    });
+
     qsa("[data-connect]").forEach(button => button.addEventListener("click", () => {
-      showToast(`${button.dataset.connect}: falta configurar OAuth real`);
+      const provider = button.dataset.connect;
+      const backend = getBackendUrl();
+      if (provider === "Polar" || provider === "Strava") {
+        if (!backend) {
+          showToast("Pega primero la URL del backend");
+          switchView("connect");
+          qs("#backendUrl").focus();
+          return;
+        }
+        window.open(`${backend}/auth/${provider.toLowerCase()}`, "_blank", "noopener");
+        return;
+      }
+      if (provider === "Google Sheets" || provider === "Jefit" || provider === "MyFitnessPal") {
+        qs("#csvFile").click();
+        showToast(`${provider}: importa el CSV exportado`);
+        return;
+      }
+      showToast(`${provider}: conexión preparada`);
     }));
 
     qs("#settingsForm").addEventListener("submit", (event) => {
@@ -1298,6 +1433,8 @@
 
     window.addEventListener("resize", renderCharts);
 
+    setBackendUrl(localStorage.getItem(backendStorageKey) || "");
+    renderProviderStatus();
     renderWorkouts();
     renderPlan();
     renderInsights();

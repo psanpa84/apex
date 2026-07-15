@@ -50,7 +50,7 @@ Para nutrición puedes importar `plantilla-nutricion.csv`:
 
 ## Siguiente paso para datos reales
 
-Para conectar cuentas reales hay que añadir un backend con OAuth:
+Ya hay un backend preparado en la carpeta `backend/`. Sirve para conectar cuentas reales sin exponer secretos en GitHub Pages:
 
 - Polar AccessLink: sueño, Nightly Recharge, pulso, actividad diaria y entrenamientos.
 - Strava API: actividades, ritmo, desnivel, frecuencia cardiaca, potencia y segmentos.
@@ -58,7 +58,25 @@ Para conectar cuentas reales hay que añadir un backend con OAuth:
 - Jefit: fuerza por exportación CSV mientras no haya API pública oficial disponible.
 - MyFitnessPal: calorías y macros por exportación CSV; en Android también puede estudiarse Health Connect como puente.
 
-La app ya tiene la interfaz y la separación de fuentes preparada para esa conexión.
+La app tiene una pantalla `Conectar` con URL de backend, comprobación de estado y botones de conexión.
+
+## Conexión fácil
+
+1. Entra en `backend/`.
+2. Copia `.env.example` como `.env`.
+3. Rellena las claves de Polar y Strava que tengas.
+4. Ejecuta el backend:
+
+```bash
+node --env-file=.env server.js
+```
+
+5. En la webapp, abre `Conectar`.
+6. Pega `http://localhost:8787` como URL del backend.
+7. Pulsa `Comprobar`.
+8. Pulsa `Conectar` en Polar o Strava.
+
+Cuando lo despliegues en producción, cambia `BACKEND_URL` y `FRONTEND_URL` en el backend.
 
 ## Publicarla en GitHub Pages
 
