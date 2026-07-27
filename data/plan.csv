@@ -1,0 +1,9 @@
+fecha,plan,real,rpe,carga,estado,bloque,marca,km,ritmo,zona,progreso,semana,prueba,resultado,cambio
+Semana 1 Lunes,Rodaje Z2 50 min + 6 rectas,Pendiente,-,68,Planificado,z2 tirada larga,50 min + 6 rectas,9.0,5:30/km,80% en Z2,60,,,,
+Semana 1 Martes,Fuerza tren inferior + core,Pendiente,-,42,Planificado,fuerza,Pierna + core,,45 min,RPE 7,54,,,,
+Semana 1 Miercoles,Series 5 x 1 km rec 2 min,Pendiente,-,92,Vigilar,series,5 x 1 km,10.2,3:58/km,41% Z4-Z5,61,,,,
+Semana 1 Jueves,Descanso activo + movilidad,Pendiente,-,16,Planificado,,,,,,,,,
+Semana 1 Viernes,Umbral Z4 4 x 8 min,Pendiente,-,88,Vigilar,umbral z4,4 x 8 min,12.4,4:18/km,38% en Z4,68,,,,
+Semana 1 Sabado,Rodaje muy suave 40 min,Pendiente,-,38,Planificado,z2 tirada larga,40 min,7.0,5:45/km,85% en Z2,62,,,,
+Semana 1 Domingo,Tirada larga 90 min progresiva,Pendiente,-,124,Planificado,z2 tirada larga,90 min,17.8,5:24/km,82% en Z2,76,,,,
+Semana 4 Domingo,Test 20 min umbral,Pendiente,-,90,Vigilar,,,,,,Semana 4,Test 20 min umbral,Pendiente,Comparar ritmo y FC
